@@ -2,6 +2,7 @@ import csv
 import grs
 import datetime
 import time
+# this is tw stock fetch by grs for pyalogtrade
 
 def roc_time_to_west_time(roc_time, ):
     time_peace = roc_time.split("/")
