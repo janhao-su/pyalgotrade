@@ -28,7 +28,7 @@ overSoldThreshold = 10
 
 instrument = "3034.TW"#"2330.TW"
 #instrument = "2330.TW"
-instrument = "2618.TW"
+#instrument = "2618.TW"
 instruments = [instrument]
 # Load the yahoo feed from the CSV file
 #feed = yahoofeed.Feed()
@@ -62,13 +62,15 @@ plt = plotter.StrategyPlotter(myStrategy)
 plt.getInstrumentSubplot(instrument).addDataSeries("SMA", myStrategy.getSMA())
 # Plot the simple returns on each bar.
 #plt.getOrCreateSubplot("returns").addDataSeries("Simple returns", returnsAnalyzer.getReturns())
-plt.getOrCreateSubplot(instrument).addDataSeries("MACD-HIST", myStrategy.gethist())
-plt.getOrCreateSubplot(instrument).addDataSeries("MACD-signal", myStrategy.getsignal())
-plt.getOrCreateSubplot(instrument).addDataSeries("MACD", myStrategy.getmacd())
+#plt.getOrCreateSubplot(instrument).addDataSeries("MACD-HIST", myStrategy.gethist())
+#plt.getOrCreateSubplot(instrument).addDataSeries("MACD-signal", myStrategy.getsignal())
+#plt.getOrCreateSubplot(instrument).addDataSeries("MACD", myStrategy.getmacd())
 #plt.getOrCreateSubplot("vol").addDataSeries("Vol",  myStrategy.getVol())
 #plt.getOrCreateSubplot("diff").addDataSeries("diff",  myStrategy.getdiff())
 plt.getOrCreateSubplot("diff").addDataSeries("diffsma",  myStrategy.getdiffsma())
 plt.getOrCreateSubplot("diff").addDataSeries("diffsma2",  myStrategy.getdiffsma2())
+plt.getOrCreateSubplot("diff").addDataSeries("diffsma3",  myStrategy.getdiffsma3())
+plt.getOrCreateSubplot("diff").addDataSeries("diff",  myStrategy.getdiff())
 
 #plt.getInstrumentSubplot(instructment).addDataSeries("upper", myStrategy.getBollingerBands().getUpperBand())
 #plt.getInstrumentSubplot(instructment).addDataSeries("middle", myStrategy.getBollingerBands().getMiddleBand())

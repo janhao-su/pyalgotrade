@@ -92,7 +92,8 @@ class macd_strategy(strategy.BacktestingStrategy):
         if len(self.__prices[:]) < 20:
             self.__diffsma.appendWithDateTime(self.__prices.getDateTimes()[-1], 0 )
         else :
-            self.__diffsma.appendWithDateTime(self.__prices.getDateTimes()[-1], sum(self.__diff[-1:-21:-1])/20)
+            #self.__diffsma.appendWithDateTime(self.__prices.getDateTimes()[-1], sum(self.__diff[-1:-21:-1])/20)
+            self.__diffsma.appendWithDateTime(self.__prices.getDateTimes()[-1], sum(self.__diff[-1:-21:-1]) )
 
             #print self.__diff[-1:-21:-1]
 
@@ -101,20 +102,24 @@ class macd_strategy(strategy.BacktestingStrategy):
             self.__diffsma3.appendWithDateTime(self.__prices.getDateTimes()[-1],  0)
         else:
             self.__diffsma2.appendWithDateTime(self.__prices.getDateTimes()[-1], sum(self.__diff2[-1:-4:-1]) / 3)
-            self.__diffsma3.appendWithDateTime(self.__prices.getDateTimes()[-1], sum(self.__diff[-1:-4:-1]) / 3)
+            self.__diffsma3.appendWithDateTime(self.__prices.getDateTimes()[-1], sum(self.__diff[-1:-4:-1]) /3 *5)
 
             # print self.__diff[-1:-21:-1]
         if self.__position is None:
             #if signal[-1] > 0.0 and signal[-2] <= 0.0 and  hist[-1] > 0.0:
             #if self.__macd[-1] > 0.0 and self.__macd[-2] <= 0.0 and hist[-1] > 0.0:
             #if hist[-1] > 0.0 and hist[-2] <= 0.0 :#and  signal[-1] > 0.0:
-            if self.short ==0 and   self.__diffsma[-1] > 0 :#and self.__diffsma[-2] < 0: #and self.__sma[-1]>=self.__sma[-2] and self.__sma[-2] != None and
+            if self.short ==0 and   self.__diffsma[-1] > 0 :#and self.__diffsma3[-1] > 0:#and self.__diffsma[-2] < 0: #and self.__sma[-1]>=self.__sma[-2] and self.__sma[-2] != None and
                 shares = int(self.getBroker().getCash() / bars[self.__instrument].getPrice())
-                #shares -=1
+                shares -= (shares%1000)
                 #print shares, self.getBroker().getCash(),bars[self.__instrument].getPrice()
                 # Enter a buy market order. The order is good till canceled.
                 self.__position = self.enterLong(self.__instrument, shares, True)
                 print "buylong "+ str(bars[self.__instrument].getPrice()) +" " +str(self.__prices.getDateTimes()[-1])
+                print self.__diffsma[-5:-1]
+                print self.__diffsma3[-5:-1]
+                print self.__diff[-5:-1]
+                self.buy_price  = bars[self.__instrument].getPrice()
             #elif  cross.cross_below(self.__macd.getSignal(),  self.__macd) > 0  and self.short == 1  and self.__diffsma[-1] < 0: #and self.__sma[-1] <=self.__sma[-2] and self.__sma[-2] != None:
             #    shares = int(self.getBroker().getCash() / bars[self.__instrument].getPrice())
                # shares -=1
@@ -131,10 +136,23 @@ class macd_strategy(strategy.BacktestingStrategy):
         #    print "sell"
         #    self.__position.exitMarket()
         #elif not self.__position.exitActive() and self.__diffsma[-1] < 0 and self.__diffsma[-2] >0and self.short == 0:
-        #    print "selllong " +str( bars[self.__instrument].getPrice())+" " +str(self.__prices.getDateTimes()[-1])
+        #    print "selllong by sma1 " + str(bars[self.__instrument].getPrice()) + " " + str(
+        #        self.__prices.getDateTimes()[-1]) + str(bars[self.__instrument].getPrice() - self.buy_price)
         #    self.__position.exitMarket()
-        elif not self.__position.exitActive() and self.__diffsma3[-1] < 0 and self.__diffsma3[-2] >0and self.short == 0:
-            print "selllong " +str( bars[self.__instrument].getPrice())+" " +str(self.__prices.getDateTimes()[-1])
+        elif not self.__position.exitActive() and self.__diffsma3[-1] < 0 and self.__diffsma3[-2] >0 and self.short == 0:
+            if(bars[self.__instrument].getPrice() - self.buy_price ) < 0 :
+                print "###############"
+
+            print "selllong by sma3 " +str( bars[self.__instrument].getPrice())+" " +str(self.__prices.getDateTimes()[-1]) + str(bars[self.__instrument].getPrice() - self.buy_price)
             self.__position.exitMarket()
+        elif not self.__position.exitActive() and ( bars[self.__instrument].getPrice() < self.buy_price*0.95 ) and self.short == 0:
+            print "selllong by reduce 5 " + str(bars[self.__instrument].getPrice()) + " " + str(
+                self.__prices.getDateTimes()[-1]) + str(bars[self.__instrument].getPrice() - self.buy_price)
+            self.__position.exitMarket()
+        #elif not self.__position.exitActive() and self.__diffsma[-1] < -8 and self.short == 0:
+         #   print "selllong by because weak sma " + str(bars[self.__instrument].getPrice()) + " " + str(
+         #       self.__prices.getDateTimes()[-1]) + str(bars[self.__instrument].getPrice() - self.buy_price)
+         #   self.__position.exitMarket()
+        pass
         pass
         pass
